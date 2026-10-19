@@ -1,0 +1,55 @@
+@startuml architecture
+!pragma layout smetana
+skinparam defaultFontName Arial
+skinparam dpi 150
+skinparam shadowing false
+skinparam packageBackgroundColor #FDFDF7
+skinparam componentBackgroundColor #F7FAFD
+title Архитектура приложения «ВетКлиник»
+
+package "ru.vetclinic.ui  (Swing)" as ui {
+  [RoleDialog\nвыбор СУБД и роли] as role
+  [MainFrame\nвкладки по ролям] as main
+  [Панели и диалоги:\nSchedulePanel, OwnersPanel,\nVetsPanel, ServicesPanel,\nReportsPanel, VisitDialog,\nAppointmentDialog, InvoiceDialog] as panels
+}
+
+package "ru.vetclinic.service" as svc {
+  [ClinicService\nфасад, транзакции] as cs
+  [Validator, SlotCalculator,\nInvoiceFormatter] as helpers
+}
+
+package "ru.vetclinic.dao  (JDBC, PreparedStatement)" as dao {
+  [OwnerDao, PetDao, VetDao,\nServiceDao, ReferenceDao,\nAppointmentDao, ReportDao] as daos
+}
+
+package "ru.vetclinic.db" as dbp {
+  [Database\nсоединения, транзакции] as database
+  [Dialect\nPostgresDialect / MssqlDialect] as dialect
+}
+
+package "ru.vetclinic.config" as cfg {
+  [AppConfig, DbSettings] as appcfg
+}
+
+folder "config/" as files {
+  [db.properties] as dbprops
+  [os/windows.properties\nos/linux.properties] as osprops
+}
+
+database "PostgreSQL\nvet_clinic" as pg
+database "SQL Server\nvet_clinic" as ms
+
+role --> main
+main --> panels
+panels --> cs
+cs --> helpers
+cs --> daos
+cs --> database
+daos --> database : Connection
+database --> dialect
+database ..> pg : JDBC\n(org.postgresql)
+database ..> ms : JDBC\n(mssql-jdbc)
+role --> appcfg
+appcfg --> dbprops
+appcfg --> osprops
+@enduml

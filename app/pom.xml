@@ -63,7 +63,8 @@
                         <test.databases>${test.databases}</test.databases>
                         <file.encoding>UTF-8</file.encoding>
                     </systemPropertyVariables>
-                    <argLine>-Djava.library.path=${project.build.directory}/native</argLine>
+                    <!-- кавычки обязательны: путь к проекту может содержать пробелы -->
+                    <argLine>"-Djava.library.path=${project.build.directory}/native" --enable-native-access=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
 
