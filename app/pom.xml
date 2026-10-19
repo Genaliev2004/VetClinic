@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.vetclinic</groupId>
+    <artifactId>vetclinic</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <name>VetClinic</name>
+    <description>Информационная система ветеринарной клиники (Swing + JDBC, PostgreSQL / SQL Server)</description>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <postgresql.version>42.7.13</postgresql.version>
+        <mssql.version>13.6.0</mssql.version>
+        <junit.version>5.12.1</junit.version>
+        <!-- Набор СУБД для интеграционных тестов: mvn test -Dtest.databases=postgresql -->
+        <test.databases>postgresql,mssql</test.databases>
+    </properties>
+
+    <dependencies>
+        <!-- Только JDBC-драйверы: без ORM и фреймворков -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${mssql.version}.jre11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>vetclinic</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.14.1</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.5</version>
+                <configuration>
+                    <!-- тесты запускаются из каталога app, конфигурация лежит уровнем выше -->
+                    <systemPropertyVariables>
+                        <vetclinic.config>${project.basedir}/../config</vetclinic.config>
+                        <test.databases>${test.databases}</test.databases>
+                        <file.encoding>UTF-8</file.encoding>
+                    </systemPropertyVariables>
+                    <argLine>-Djava.library.path=${project.build.directory}/native</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- Нативная библиотека Windows-аутентификации SQL Server (только для Windows x64) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.9.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-mssql-auth-dll</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.microsoft.sqlserver</groupId>
+                                    <artifactId>mssql-jdbc_auth</artifactId>
+                                    <version>${mssql.version}.x64</version>
+                                    <type>dll</type>
+                                    <outputDirectory>${project.build.directory}/native</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Один исполняемый jar вместе с драйверами: target/vetclinic.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>ru.vetclinic.Main</mainClass>
+                                    <manifestEntries>
+                                        <!-- Java 22+: разрешаем драйверу SQL Server загрузить DLL без предупреждения -->
+                                        <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
+                                    </manifestEntries>
+                                </transformer>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <exclude>module-info.class</exclude>
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
