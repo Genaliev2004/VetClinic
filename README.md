@@ -47,7 +47,7 @@ VetClinic/
 
 | Что | Версия | Проверка |
 |-----|--------|----------|
-| JDK | 17 или новее (код собирается под Java 17, проверено на Java 25) | `java -version` |
+| JDK | 17 или новее (код собирается под Java 17; проверено на Java 25 в Windows и Java 21 в Ubuntu) | `java -version` |
 | Git | любая | `git --version` |
 | PostgreSQL **и/или** SQL Server | PostgreSQL 14+ (проверено на 18), SQL Server 2019+ (проверено на 2022) | `psql --version`, `sqlcmd -?` |
 | Интернет при первой сборке | — | Maven Wrapper скачает Maven 3.9 и JDBC-драйверы |
@@ -100,6 +100,8 @@ DLL нужна для Windows-аутентификации SQL Server. В окн
 нажмите «Подключиться», выберите роль и нажмите «Войти».
 
 ## Развёртывание в Linux (Ubuntu)
+
+Проверено на Ubuntu 26.04.1 LTS (OpenJDK 21, PostgreSQL 18.6): 72 теста пройдено, тесты SQL Server пропускаются.
 
 Одной командой: она поставит JDK 17 и PostgreSQL, создаст базу, прогонит тесты
 и соберёт приложение.
@@ -188,18 +190,21 @@ mssql.url=jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=vet_clinic;encrypt
 | SQL Server: «connection refused» на порту 1433 | включите TCP/IP в SQL Server Configuration Manager или укажите порт/экземпляр в `config/local.properties` |
 | `mvnw.cmd`: «Cannot start maven from wrapper» | путь к профилю содержит кириллицу или пробелы — задайте `set MAVEN_USER_HOME=C:\m2` и повторите |
 | Кириллица в консоли Windows «кракозябрами» | на работу программы не влияет; `run.bat` переключает консоль на UTF-8 |
+| Linux: `apt update` выдаёт 404 (поддержка выпуска Ubuntu закончилась) | `setup_ubuntu.sh` сам переключит apt на old-releases.ubuntu.com |
 | Linux: `Permission denied` для `mvnw` | `chmod +x app/mvnw` (это делает `build.sh`) |
 
 ## Ветки репозитория
 
 | Ветка | Назначение |
 |-------|-----------|
-| `main` | стабильная версия для сдачи (тег `v1.0`) |
+| `main` | стабильная версия для сдачи (теги `v1.0`, `v1.0.1`, `v1.0.2`) |
 | `develop` | интеграционная ветка: сюда сливаются feature-ветки |
 | `feature/database` | этапы 1–4: описание, модели, скрипты PostgreSQL и SQL Server |
 | `feature/java-app` | клиентское приложение |
 | `feature/tests` | модульные и интеграционные тесты, скрипты сборки и запуска, документация |
 | `feature/report` | отчёт по проекту |
+| `fix/ubuntu-setup` | исправления по итогам проверки в Ubuntu |
+| `docs/linux-results` | результаты проверки в Ubuntu |
 
 Слияние идёт через `git merge --no-ff`, поэтому в истории видно, какая работа
 выполнялась в какой ветке (`git log --graph --oneline --all`).
