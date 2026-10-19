@@ -64,7 +64,7 @@
                         <file.encoding>UTF-8</file.encoding>
                     </systemPropertyVariables>
                     <!-- кавычки обязательны: путь к проекту может содержать пробелы -->
-                    <argLine>"-Djava.library.path=${project.build.directory}/native" --enable-native-access=ALL-UNNAMED</argLine>
+                    <argLine>"-Djava.library.path=${project.build.directory}/native"</argLine>
                 </configuration>
             </plugin>
 
