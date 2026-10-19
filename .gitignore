@@ -1,0 +1,22 @@
+# Сборка
+app/target/
+*.class
+
+# Локальные настройки подключения (шаблон — config/db.properties.example)
+config/local.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+bin/
+
+# ОС
+Thumbs.db
+.DS_Store
+
+# Временные файлы Word
+~$*
