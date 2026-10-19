@@ -1,0 +1,48 @@
+@startuml use_cases
+!pragma layout smetana
+left to right direction
+skinparam defaultFontName Arial
+skinparam dpi 150
+skinparam shadowing false
+skinparam usecaseBackgroundColor #FDFDF7
+skinparam usecaseBorderColor #555555
+skinparam actorBorderColor #333333
+title Варианты использования приложения «ВетКлиник»
+
+actor "Администратор" as admin
+actor "Регистратор" as reg
+actor "Врач" as doc
+
+rectangle "Приложение «ВетКлиник»" {
+  usecase "Вести справочник\nвидов животных" as UC1
+  usecase "Вести справочник\nспециализаций" as UC2
+  usecase "Вести список врачей\n(приём / увольнение)" as UC3
+  usecase "Вести прайс услуг" as UC4
+  usecase "Смотреть отчёты:\nвыручка врачей,\nпопулярные услуги" as UC5
+
+  usecase "Искать и регистрировать\nвладельцев" as UC6
+  usecase "Регистрировать\nпитомцев" as UC7
+  usecase "Смотреть историю\nболезни питомца" as UC8
+  usecase "Записать на приём\n(свободный слот)" as UC9
+  usecase "Отменить запись" as UC10
+  usecase "Сформировать счёт" as UC11
+
+  usecase "Смотреть своё\nрасписание" as UC12
+  usecase "Провести приём:\nдиагноз и услуги" as UC13
+}
+
+admin --> UC1
+admin --> UC2
+admin --> UC3
+admin --> UC4
+admin --> UC5
+reg --> UC6
+reg --> UC7
+reg --> UC8
+reg --> UC9
+reg --> UC10
+reg --> UC11
+doc --> UC12
+doc --> UC13
+doc --> UC8
+@enduml

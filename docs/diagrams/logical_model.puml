@@ -1,0 +1,86 @@
+@startuml logical_model
+' Логическая модель (нотация IE / «воронья лапка»).
+' # — уникальный идентификатор сущности, * — обязательный атрибут,
+' o — необязательный атрибут, (U) — уникальный атрибут.
+!pragma layout smetana
+hide circle
+hide methods
+skinparam defaultFontName Arial
+skinparam dpi 150
+skinparam shadowing false
+skinparam ClassBackgroundColor #FDFDF7
+skinparam ClassBorderColor #555555
+skinparam ArrowColor #333333
+title Логическая модель данных «ВетКлиник»
+
+entity "ВИД ЖИВОТНОГО" as species {
+  # Код вида
+  --
+  * Название (U)
+}
+
+entity "ВЛАДЕЛЕЦ" as owner {
+  # Код владельца
+  --
+  * Фамилия
+  * Имя
+  o Отчество
+  * Телефон (U)
+  o E-mail (U)
+  o Адрес
+  * Дата регистрации
+}
+
+entity "ПИТОМЕЦ" as pet {
+  # Код питомца
+  --
+  * Кличка
+  o Порода
+  * Пол
+  o Дата рождения
+  o Вес, кг
+  o Номер чипа (U)
+}
+
+entity "СПЕЦИАЛИЗАЦИЯ" as specialization {
+  # Код специализации
+  --
+  * Название (U)
+}
+
+entity "ВРАЧ" as vet {
+  # Код врача
+  --
+  * Фамилия
+  * Имя
+  o Отчество
+  * Телефон (U)
+  * Дата приёма на работу
+  * Работает (да/нет)
+}
+
+entity "УСЛУГА" as service {
+  # Код услуги
+  --
+  * Название (U)
+  * Текущая цена
+  * Оказывается (да/нет)
+}
+
+entity "ПРИЁМ" as appointment {
+  # Код приёма
+  --
+  * Дата и время начала
+  * Статус
+  o Жалоба
+  o Диагноз
+}
+
+owner ||--o{ pet : "владеет"
+species ||--o{ pet : "является видом"
+pet ||--o{ appointment : "приходит на"
+vet ||--o{ appointment : "проводит"
+specialization ||--o{ vet : "имеет"
+appointment }o--o{ service : "включает\n(количество, цена\nна момент оказания)"
+
+@enduml
