@@ -119,14 +119,33 @@ BUILD SUCCESS
 | ОС | СУБД | Как проверялось | Результат |
 |----|------|-----------------|-----------|
 | Windows 11 Home (хост) | PostgreSQL 18.6, SQL Server 2022 | `deploy_*.bat`, `build.bat test`, `run.bat`, 96 автотестов | ✅ всё работает |
-| Ubuntu (VirtualBox, «Gena ubuntu») | PostgreSQL из репозитория Ubuntu | `bash scripts/setup_ubuntu.sh`, затем `bash scripts/run.sh` | заполняется после проверки на ВМ |
+| Ubuntu 26.04.1 LTS (VirtualBox, «Gena ubuntu»), OpenJDK 21.0.12.1 | PostgreSQL 18.6 (пакет Ubuntu) | проект передан в ВМ по сети NAT (хост = 10.0.2.2), `bash scripts/setup_ubuntu.sh`, затем `bash scripts/run.sh` | ✅ 34/34 проверок ограничений; JUnit: 72 пройдено, 0 ошибок, 24 пропущено (тесты SQL Server); приложение работает (снимок `docs/screenshots/16_linux_schedule.png`) |
+
+Вывод проверки в Ubuntu (19.10.2026):
+
+```
+Description:    Ubuntu 26.04.1 LTS
+openjdk version "21.0.12.1" 2026-08-18
+psql (PostgreSQL) 18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)
+Tests run: 8,  Failures: 0, Errors: 0, Skipped: 0  -- AppConfigTest
+Tests run: 8,  Failures: 0, Errors: 0, Skipped: 0  -- DialectTest
+Tests run: 24, Failures: 0, Errors: 0, Skipped: 24 -- MssqlIntegrationTest
+Tests run: 24, Failures: 0, Errors: 0, Skipped: 0  -- PostgresIntegrationTest
+Tests run: 5,  Failures: 0, Errors: 0, Skipped: 0  -- ClinicServiceValidationTest
+Tests run: 4,  Failures: 0, Errors: 0, Skipped: 0  -- InvoiceFormatterTest
+Tests run: 5,  Failures: 0, Errors: 0, Skipped: 0  -- SlotCalculatorTest
+Tests run: 18, Failures: 0, Errors: 0, Skipped: 0  -- ValidatorTest
+BUILD SUCCESS
+```
 
 Особенности Linux, учтённые в проекте:
 
 * `config/os/linux.properties` выключает Windows-аутентификацию SQL Server,
   включает Nimbus и шрифт DejaVu Sans, задаёт LF;
 * в `*.sh` и `mvnw` окончания строк LF (зафиксированы в `.gitattributes`);
-* в Linux тесты запускаются только для PostgreSQL (`-Dtest.databases=postgresql`).
+* в Linux тесты запускаются только для PostgreSQL (`-Dtest.databases=postgresql`);
+* попытка подключиться к SQL Server в Linux (его там нет) даёт понятное сообщение
+  «Нет подключения к базе данных…», программа продолжает работать.
 
 ## 6.7. Найденные и исправленные дефекты
 
@@ -138,3 +157,6 @@ BUILD SUCCESS
 | D4 | Тесты Maven падали при запуске JVM | путь `-Djava.library.path` с пробелами без кавычек | кавычки в `argLine` |
 | D5 | Кнопки «◀ ▶» отображались квадратами | в шрифте Segoe UI нет этих символов | заменены на `<` и `>` |
 | D6 | Проверка T26 из первой версии давала PASS по чужой причине | для отмены был взят проведённый приём, и срабатывало правило BR-16, а не BR-17 | для проверки BR-17 взят запланированный приём с предварительно добавленной услугой |
+| D7 | Тесты могли не запуститься на Java 17 (Ubuntu) | в `argLine` был флаг `--enable-native-access`, нужный только Java 22+ | флаг убран: без него лишь выводится предупреждение |
+| D8 | `maven-wrapper.properties` попал в репозиторий с окончаниями CRLF | файл добавлен до появления `.gitattributes` | окончания строк нормализованы (`git add --renormalize`) |
+| D9 | `apt` на Ubuntu с закончившейся поддержкой отвечает 404 | пакеты переезжают на old-releases.ubuntu.com | `setup_ubuntu.sh` сам переключает источники; JDK 21 с запасным вариантом JDK 17 |
