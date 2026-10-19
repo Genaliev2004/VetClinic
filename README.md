@@ -1,5 +1,7 @@
 # ВетКлиник — информационная система ветеринарной клиники
 
+**Репозиторий:** https://github.com/Genaliev2004/VetClinic
+
 Итоговый проект по курсам «Базы данных» и «Системный подход в разработке ПО».
 Java-приложение с графическим интерфейсом (Swing) работает с реляционной базой
 данных из **8 таблиц** через **чистый JDBC** (без ORM и фреймворков) и умеет
@@ -57,7 +59,7 @@ VetClinic/
 ## Развёртывание в Windows
 
 ```bat
-git clone <ссылка на репозиторий> VetClinic
+git clone https://github.com/Genaliev2004/VetClinic.git VetClinic
 cd VetClinic
 ```
 
@@ -107,7 +109,7 @@ DLL нужна для Windows-аутентификации SQL Server. В окн
 и соберёт приложение.
 
 ```bash
-git clone <ссылка на репозиторий> VetClinic
+git clone https://github.com/Genaliev2004/VetClinic.git VetClinic
 cd VetClinic
 bash scripts/setup_ubuntu.sh
 bash scripts/run.sh
@@ -197,7 +199,7 @@ mssql.url=jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=vet_clinic;encrypt
 
 | Ветка | Назначение |
 |-------|-----------|
-| `main` | стабильная версия для сдачи (теги `v1.0`, `v1.0.1`, `v1.0.2`) |
+| `main` | стабильная версия для сдачи (теги `v1.0` – `v1.0.3`) |
 | `develop` | интеграционная ветка: сюда сливаются feature-ветки |
 | `feature/database` | этапы 1–4: описание, модели, скрипты PostgreSQL и SQL Server |
 | `feature/java-app` | клиентское приложение |
@@ -205,6 +207,7 @@ mssql.url=jdbc:sqlserver://localhost\\SQLEXPRESS;databaseName=vet_clinic;encrypt
 | `feature/report` | отчёт по проекту |
 | `fix/ubuntu-setup` | исправления по итогам проверки в Ubuntu |
 | `docs/linux-results` | результаты проверки в Ubuntu |
+| `docs/github` | ссылка на репозиторий GitHub |
 
 Слияние идёт через `git merge --no-ff`, поэтому в истории видно, какая работа
 выполнялась в какой ветке (`git log --graph --oneline --all`).
