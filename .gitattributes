@@ -1,0 +1,13 @@
+# Окончания строк не зависят от настроек git у того, кто клонирует проект
+* text=auto
+*.sh      text eol=lf
+mvnw      text eol=lf
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+*.sql     text eol=lf
+*.java    text eol=lf
+*.properties text eol=lf
+*.png     binary
+*.jar     binary
+*.docx    binary
+*.pdf     binary

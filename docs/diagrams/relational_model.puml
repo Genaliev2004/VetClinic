@@ -1,0 +1,99 @@
+@startuml relational_model
+' Реляционная модель (PostgreSQL). PK — первичный ключ, FK — внешний ключ,
+' UQ — ограничение уникальности, NN — NOT NULL.
+!pragma layout smetana
+hide circle
+hide methods
+skinparam defaultFontName Arial
+skinparam dpi 150
+skinparam shadowing false
+skinparam ClassBackgroundColor #F7FAFD
+skinparam ClassBorderColor #555555
+skinparam ArrowColor #333333
+title Реляционная модель «ВетКлиник» (PostgreSQL)
+
+entity species {
+  <b>PK</b> species_id : INTEGER
+  --
+  species_name : VARCHAR(40) NN UQ
+}
+
+entity owner {
+  <b>PK</b> owner_id : INTEGER
+  --
+  last_name : VARCHAR(50) NN
+  first_name : VARCHAR(50) NN
+  middle_name : VARCHAR(50)
+  phone : VARCHAR(12) NN UQ
+  email : VARCHAR(100) UQ
+  address : VARCHAR(200)
+  registered_on : DATE NN
+}
+
+entity pet {
+  <b>PK</b> pet_id : INTEGER
+  --
+  <b>FK</b> owner_id : INTEGER NN
+  <b>FK</b> species_id : INTEGER NN
+  pet_name : VARCHAR(40) NN
+  breed : VARCHAR(60)
+  sex : CHAR(1) NN
+  birth_date : DATE
+  weight_kg : NUMERIC(6,2)
+  chip_number : CHAR(15) UQ
+}
+
+entity specialization {
+  <b>PK</b> specialization_id : INTEGER
+  --
+  specialization_name : VARCHAR(60) NN UQ
+}
+
+entity vet {
+  <b>PK</b> vet_id : INTEGER
+  --
+  <b>FK</b> specialization_id : INTEGER NN
+  last_name : VARCHAR(50) NN
+  first_name : VARCHAR(50) NN
+  middle_name : VARCHAR(50)
+  phone : VARCHAR(12) NN UQ
+  hire_date : DATE NN
+  is_active : BOOLEAN NN
+}
+
+entity service {
+  <b>PK</b> service_id : INTEGER
+  --
+  service_name : VARCHAR(100) NN UQ
+  price : NUMERIC(10,2) NN
+  is_active : BOOLEAN NN
+}
+
+entity appointment {
+  <b>PK</b> appointment_id : INTEGER
+  --
+  <b>FK</b> pet_id : INTEGER NN
+  <b>FK</b> vet_id : INTEGER NN
+  start_time : TIMESTAMP(0) NN
+  status : VARCHAR(10) NN
+  complaint : VARCHAR(500)
+  diagnosis : VARCHAR(500)
+}
+
+entity appointment_service {
+  <b>PK, FK</b> appointment_id : INTEGER
+  <b>PK, FK</b> service_id : INTEGER
+  --
+  quantity : SMALLINT NN
+  price : NUMERIC(10,2) NN
+}
+
+owner ||--o{ pet
+species ||--o{ pet
+pet ||--o{ appointment
+vet ||--o{ appointment
+specialization ||--o{ vet
+appointment ||--o{ appointment_service : "ON DELETE\nCASCADE"
+service ||--o{ appointment_service
+
+@enduml
